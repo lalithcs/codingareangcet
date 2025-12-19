@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Code } from 'lucide-react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { Card, CardContent, CardHeader } from '../components/Card';
+import { useAuth } from '../context/AuthContext';
 
 export function LoginPage() {
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
@@ -14,8 +16,10 @@ export function LoginPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 🔥 TEMP: fake login success
-    // Later this will call POST /auth/login
+    // TEMP logic — backend will replace this
+    const role = email === 'admin@college.edu' ? 'admin' : 'user';
+    login(role);
+
     navigate('/problems');
   };
 
@@ -60,9 +64,9 @@ export function LoginPage() {
 
             <p className="text-center text-sm text-muted-foreground">
               Don&apos;t have an account?{' '}
-              <Link to="/register" className="text-primary hover:underline">
+              <a href="/register" className="text-primary hover:underline">
                 Create account
-              </Link>
+              </a>
             </p>
           </form>
         </CardContent>

@@ -1,13 +1,28 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
-import App from './app/App';
-import './styles/index.css';
+import { useAuth } from './app/context/AuthContext';
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </React.StrictMode>
-);
+export function Navbar() {
+  const { isAuthenticated, role, logout } = useAuth();
+
+  return (
+    <nav>
+      {/* common links */}
+      <a href="/problems">Problems</a>
+      <a href="/leaderboard">Leaderboard</a>
+
+      {role === 'admin' && (
+        <a href="/admin" className="text-warning">
+          Admin
+        </a>
+      )}
+
+      {isAuthenticated ? (
+        <button onClick={logout}>Logout</button>
+      ) : (
+        <>
+          <a href="/login">Login</a>
+          <a href="/register">Sign Up</a>
+        </>
+      )}
+    </nav>
+  );
+}

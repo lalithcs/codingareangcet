@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
+import { useAuth } from './context/AuthContext';
 
 import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
@@ -12,25 +13,49 @@ import { LeaderboardPage } from './pages/LeaderboardPage';
 import { AdminDashboard } from './pages/AdminDashboard';
 
 export default function App() {
-  const isAuthenticated = false; // temporary (we’ll wire auth later)
+  const { isAuthenticated, role } = useAuth();
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar isAuthenticated={isAuthenticated} />
+      <Navbar />
 
       <Routes>
+        {/* Public */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
+        {/* Open */}
         <Route path="/problems" element={<ProblemsPage />} />
         <Route path="/problems/:id" element={<ProblemDetailPage />} />
-
-        <Route path="/submission/:id" element={<SubmissionPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
-        <Route path="/admin" element={<AdminDashboard />} />
 
+        {/* Protected */}
+        <Route
+          path="/profile"
+          element={
+            isAuthenticated ? <ProfilePage /> : <Navigate to="/login" />
+          }
+        />
+
+        <Route
+          path="/submission/:id"
+          element={
+            isAuthenticated ? <SubmissionPage /> : <Navigate to="/login" />
+          }
+        />
+
+        {/* Admin only */}
+        <Route
+          path="/admin"
+          element={
+            isAuthenticated && role === 'admin'
+              ? <AdminDashboard />
+              : <Navigate to="/" />
+          }
+        />
+
+        {/* Fallback */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </div>

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Code } from 'lucide-react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { Card, CardContent, CardHeader } from '../components/Card';
+import { useAuth } from '../context/AuthContext';
 
 export function RegisterPage() {
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const [username, setUsername] = useState('');
@@ -15,8 +17,8 @@ export function RegisterPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 🔥 TEMP: fake successful registration
-    // Later: POST /auth/register
+    // TEMP logic — backend will replace this
+    login('user');
     navigate('/problems');
   };
 
@@ -70,9 +72,9 @@ export function RegisterPage() {
 
             <p className="text-center text-sm text-muted-foreground">
               Already have an account?{' '}
-              <Link to="/login" className="text-primary hover:underline">
+              <a href="/login" className="text-primary hover:underline">
                 Login
-              </Link>
+              </a>
             </p>
           </form>
         </CardContent>

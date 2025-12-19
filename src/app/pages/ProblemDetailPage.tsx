@@ -17,7 +17,8 @@ interface ExecutionResult {
   logs: string[];
 }
 
-/* ===================== DATA ===================== */
+/* ===================== STARTER CODE ===================== */
+
 const STARTER_CODE: Record<string, string> = {
   cpp: `#include <bits/stdc++.h>
 using namespace std;
@@ -28,6 +29,14 @@ int main() {
 
     // write your code here
 
+    return 0;
+}
+`,
+
+  c: `#include <stdio.h>
+
+int main() {
+    // write your code here
     return 0;
 }
 `,
@@ -62,29 +71,32 @@ function main() {
 
 main();
 `,
-
-  c: `#include <stdio.h>
-
-int main() {
-    // write your code here
-    return 0;
-}
-`,
 };
-
 
 /* ===================== COMPONENT ===================== */
 
 export function ProblemDetailPage({ problemId, onBack }: any) {
-  const [language, setLanguage] = useState('cpp');
+  const [language, setLanguage] = useState<'cpp' | 'c' | 'java' | 'python' | 'javascript'>('cpp');
   const [code, setCode] = useState(STARTER_CODE.cpp);
   const [isDirty, setIsDirty] = useState(false);
-
 
   const [state, setState] = useState<ExecutionState>('idle');
   const [result, setResult] = useState<ExecutionResult>({ logs: [] });
 
+  /* ===================== LANGUAGE CHANGE ===================== */
+
+  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newLang = e.target.value as keyof typeof STARTER_CODE;
+    setLanguage(newLang as 'cpp' | 'c' | 'java' | 'python' | 'javascript');
+
+    // Load starter code ONLY if user hasn't typed yet
+    if (!isDirty) {
+      setCode(STARTER_CODE[newLang]);
+    }
+  };
+
   /* ===================== RUN ===================== */
+
   const runCode = () => {
     setState('compiling');
     setResult({ logs: ['▶ Compiling…'] });
@@ -93,11 +105,7 @@ export function ProblemDetailPage({ problemId, onBack }: any) {
       setState('running');
       setResult(r => ({
         ...r,
-        logs: [
-          ...r.logs,
-          '✔ Compilation successful',
-          '▶ Running test cases…',
-        ],
+        logs: [...r.logs, '✔ Compilation successful', '▶ Running test cases…'],
       }));
     }, 1200);
 
@@ -108,17 +116,13 @@ export function ProblemDetailPage({ problemId, onBack }: any) {
         verdict: 'AC',
         runtime: 4,
         memory: 10.2,
-        logs: [
-          ...r.logs,
-          '✔ Test case 1 passed',
-          '✔ Test case 2 passed',
-          '✔ All test cases passed',
-        ],
+        logs: [...r.logs, '✔ All test cases passed'],
       }));
     }, 3000);
   };
 
   /* ===================== SUBMIT ===================== */
+
   const submitCode = () => {
     setState('running');
     setResult({ logs: ['▶ Submitting solution…'] });
@@ -129,11 +133,7 @@ export function ProblemDetailPage({ problemId, onBack }: any) {
         verdict: 'AC',
         runtime: 4,
         memory: 10.2,
-        logs: [
-          '✔ Accepted',
-          'Runtime: 4 ms',
-          'Memory: 10.2 MB',
-        ],
+        logs: ['✔ Accepted', 'Runtime: 4 ms', 'Memory: 10.2 MB'],
       });
     }, 2500);
   };
@@ -156,77 +156,55 @@ export function ProblemDetailPage({ problemId, onBack }: any) {
             <Badge variant="easy">Easy</Badge>
           </div>
         </div>
-
-        <div className="flex items-center gap-2">
-          <Select
-            options={[
-              { value: 'cpp', label: 'C++' },
-              { value: 'java', label: 'Java' },
-              { value: 'python', label: 'Python' },
-            ]}
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-            className="w-36"
-          />
-          <Button variant="outline" size="sm" onClick={runCode}>
-            <Play className="w-4 h-4" /> Run
-          </Button>
-          <Button variant="primary" size="sm" onClick={submitCode}>
-            <Send className="w-4 h-4" /> Submit
-          </Button>
-        </div>
       </header>
 
       {/* ================= MAIN ================= */}
       <main className="flex flex-1 overflow-hidden">
-        {/* ===== EDITOR (65%) ===== */}
+        {/* ===== EDITOR SECTION ===== */}
         <section className="w-[65%] flex flex-col border-r border-border">
+          {/* ===== TOOLBAR ===== */}
+          <div className="h-12 px-4 flex items-center justify-between border-b border-border bg-card">
+            <Select
+              options={[
+                { value: 'cpp', label: 'C++' },
+                { value: 'c', label: 'C' },
+                { value: 'java', label: 'Java' },
+                { value: 'python', label: 'Python' },
+                { value: 'javascript', label: 'JavaScript (Node)' },
+              ]}
+              value={language}
+              onChange={handleLanguageChange}
+              className="w-44"
+            />
 
-  {/* ===== EDITOR TOOLBAR ===== */}
-  <div className="h-12 px-4 flex items-center justify-between border-b border-border bg-card">
-    <Select
-      options={[
-        { value: 'cpp', label: 'C++' },
-        { value: 'java', label: 'Java' },
-        { value: 'python', label: 'Python' },
-      ]}
-      value={language}
-      onChange={(e) => setLanguage(e.target.value)}
-      className="w-32"
-    />
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={runCode}>
+                <Play className="w-4 h-4" /> Run
+              </Button>
+              <Button variant="primary" size="sm" onClick={submitCode}>
+                <Send className="w-4 h-4" /> Submit
+              </Button>
+            </div>
+          </div>
 
-    <div className="flex gap-2">
-      <Button variant="outline" size="sm" onClick={runCode}>
-        <Play className="w-4 h-4" />
-        Run
-      </Button>
-      <Button variant="primary" size="sm" onClick={submitCode}>
-        <Send className="w-4 h-4" />
-        Submit
-      </Button>
-    </div>
-  </div>
+          {/* ===== CODE EDITOR ===== */}
+          <div className="flex-1 p-4">
+            <CodeEditor
+              value={code}
+              onChange={(v) => {
+                setCode(v);
+                setIsDirty(true);
+              }}
+              language={language}
+              className="h-full"
+            />
+          </div>
 
-  {/* ===== EDITOR ===== */}
-  <div className="flex-1 p-4">
-    <CodeEditor
-  value={code}
-  onChange={(v) => {
-    setCode(v);
-    setIsDirty(true);
-  }}
-  language={language}
-  className="h-full"
-/>
+          {/* ===== CONSOLE ===== */}
+          <ExecutionConsole state={state} result={result} />
+        </section>
 
-  </div>
-
-  {/* ===== CONSOLE ===== */}
-  <ExecutionConsole state={state} result={result} />
-
-</section>
-
-        {/* ===== PROBLEM (35%) ===== */}
+        {/* ===== PROBLEM PANEL ===== */}
         <aside className="w-[35%] overflow-y-auto p-6 text-sm">
           <Tabs
             tabs={[
@@ -234,15 +212,11 @@ export function ProblemDetailPage({ problemId, onBack }: any) {
                 id: 'problem',
                 label: 'Problem',
                 content: (
-                  <div className="space-y-4 leading-relaxed">
+                  <div className="space-y-4">
                     <p>
                       Given an array of integers <code>nums</code> and an integer{' '}
                       <code>target</code>, return indices of the two numbers such
                       that they add up to target.
-                    </p>
-                    <p>
-                      You may assume exactly one solution exists and the same
-                      element cannot be used twice.
                     </p>
                     <p className="text-muted-foreground">
                       Constraints: 2 ≤ nums.length ≤ 10⁴
@@ -250,8 +224,8 @@ export function ProblemDetailPage({ problemId, onBack }: any) {
                   </div>
                 ),
               },
-              { id: 'solutions', label: 'Solutions', content: <p>Community solutions</p> },
-              { id: 'discussions', label: 'Discussions', content: <p>Discussions</p> },
+              { id: 'solutions', label: 'Solutions', content: <p>Coming soon</p> },
+              { id: 'discussions', label: 'Discussions', content: <p>Coming soon</p> },
             ]}
           />
         </aside>
@@ -282,9 +256,7 @@ function ExecutionConsole({
         <div key={i}>{line}</div>
       ))}
 
-      {state === 'running' && (
-        <div className="animate-pulse">▍</div>
-      )}
+      {state === 'running' && <div className="animate-pulse">▍</div>}
     </div>
   );
 }
