@@ -1,23 +1,47 @@
 import React from 'react';
+import { cn } from './ui/utils';
 
-interface CardProps {
-  children: React.ReactNode;
-  className?: string;
-  hover?: boolean;
-}
+/* ================= ROOT CARD ================= */
 
-export function Card({ children, className = '', hover = false }: CardProps) {
+export interface CardProps
+  extends React.HTMLAttributes<HTMLDivElement> {}
+
+export function Card({ className, ...props }: CardProps) {
   return (
-    <div className={`bg-card border border-border rounded-lg ${hover ? 'hover:border-ring transition-colors cursor-pointer' : ''} ${className}`}>
-      {children}
-    </div>
+    <div
+      className={cn(
+        'rounded-lg border bg-card text-card-foreground',
+        className
+      )}
+      {...props}
+    />
   );
 }
 
-export function CardHeader({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <div className={`p-6 ${className}`}>{children}</div>;
+/* ================= HEADER ================= */
+
+export interface CardHeaderProps
+  extends React.HTMLAttributes<HTMLDivElement> {}
+
+export function CardHeader({ className, ...props }: CardHeaderProps) {
+  return (
+    <div
+      className={cn('p-6 pb-3 flex flex-col space-y-1', className)}
+      {...props}
+    />
+  );
 }
 
-export function CardContent({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <div className={`px-6 pb-6 ${className}`}>{children}</div>;
+/* ================= CONTENT ================= */
+
+export interface CardContentProps
+  extends React.HTMLAttributes<HTMLDivElement> {}
+
+export function CardContent({ className, ...props }: CardContentProps) {
+  return (
+    <div
+      className={cn('p-6 pt-0', className)}
+      {...props}
+    />
+  );
 }

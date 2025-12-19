@@ -1,94 +1,109 @@
-import React from 'react';
+/**
+ * ======================================================
+ * ProblemsPage
+ * ======================================================
+ * BACKEND CONTRACT:
+ *
+ * GET /problems
+ *
+ * Returns:
+ * [
+ *   {
+ *     id: number,
+ *     title: string,
+ *     difficulty: 'easy' | 'medium' | 'hard'
+ *   }
+ * ]
+ * ======================================================
+ */
+
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, Circle, Clock } from 'lucide-react';
+
+import { Card } from '../components/Card';
 import { Badge } from '../components/Badge';
 
 /* ===================== TYPES ===================== */
 
-type Difficulty = 'Easy' | 'Medium' | 'Hard';
-
 interface Problem {
   id: number;
   title: string;
-  difficulty: Difficulty;
-  solved: boolean;
-  attempted: boolean;
+  difficulty: 'easy' | 'medium' | 'hard';
 }
 
 /* ===================== MOCK DATA ===================== */
-
-const problems: Problem[] = [
-  { id: 1, title: 'Two Sum', difficulty: 'Easy', solved: true, attempted: false },
-  { id: 2, title: 'Add Two Numbers', difficulty: 'Medium', solved: false, attempted: true },
-  { id: 3, title: 'Longest Substring Without Repeating Characters', difficulty: 'Medium', solved: false, attempted: false },
-  { id: 4, title: 'Median of Two Sorted Arrays', difficulty: 'Hard', solved: false, attempted: false },
+/* REMOVE THIS BLOCK WHEN BACKEND IS CONNECTED */
+const MOCK_PROBLEMS: Problem[] = [
+  { id: 1, title: 'Two Sum', difficulty: 'easy' },
+  { id: 2, title: 'Reverse Linked List', difficulty: 'medium' },
+  { id: 3, title: 'Longest Palindromic Substring', difficulty: 'hard' },
 ];
-
-/* ===================== COMPONENT ===================== */
+/* =================================================== */
 
 export function ProblemsPage() {
   const navigate = useNavigate();
+  const [problems, setProblems] = useState<Problem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadProblems = async () => {
+      setLoading(true);
+
+      try {
+        /**
+         * BACKEND: GET /problems
+         */
+        // const res = await fetch('/problems', {
+        //   credentials: 'include',
+        // });
+        // const data = await res.json();
+        // setProblems(data);
+
+        /* ============== MOCK ============== */
+        await new Promise((r) => setTimeout(r, 600));
+        setProblems(MOCK_PROBLEMS);
+        /* ================================= */
+
+      } catch (err) {
+        setProblems([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProblems();
+  }, []);
+
   return (
-    <div className="min-h-screen bg-background px-6 py-6">
-      {/* Header */}
-      <header className="mb-6">
-        <h1 className="text-2xl font-semibold">Problems</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Practice problems to sharpen your problem-solving skills.
-        </p>
-      </header>
+    <div className="max-w-[1440px] mx-auto px-6 py-6">
+      <h1 className="text-2xl mb-6">Problems</h1>
 
-      {/* Table */}
-      <div className="border border-border">
-        <table className="w-full text-sm">
-          <thead className="bg-muted/40">
-            <tr className="text-muted-foreground">
-              <th className="text-left px-3 py-2 w-12">Status</th>
-              <th className="text-left px-3 py-2">Title</th>
-              <th className="text-left px-3 py-2 w-32">Difficulty</th>
-            </tr>
-          </thead>
+      {loading ? (
+        <p className="text-muted-foreground">Loading problems…</p>
+      ) : (
+        <div className="grid gap-4">
+          {problems.map((problem) => (
+            <Card
+              key={problem.id}
+              className="p-4 cursor-pointer hover:bg-accent transition"
+              onClick={() => navigate(`/problems/${problem.id}`)}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg">{problem.title}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Problem #{problem.id}
+                  </p>
+                </div>
 
-          <tbody>
-            {problems.map((p) => (
-              <tr
-                key={p.id}
-                onClick={() => navigate(`/problems/${p.id}`)}
-                className="border-t border-border hover:bg-muted/30 cursor-pointer"
-              >
-                {/* Status */}
-                <td className="px-3 py-2">
-                  {p.solved ? (
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                  ) : p.attempted ? (
-                    <Clock className="w-4 h-4 text-yellow-500" />
-                  ) : (
-                    <Circle className="w-4 h-4 text-muted-foreground" />
-                  )}
-                </td>
-
-                {/* Title */}
-                <td className="px-3 py-2">
-                  <span className="font-medium">{p.id}. {p.title}</span>
-                </td>
-
-                {/* Difficulty */}
-                <td className="px-3 py-2">
-                  <DifficultyBadge difficulty={p.difficulty} />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                <Badge variant={problem.difficulty}>
+                  {problem.difficulty.toUpperCase()}
+                </Badge>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
-}
-
-/* ===================== HELPERS ===================== */
-
-function DifficultyBadge({ difficulty }: { difficulty: Difficulty }) {
-  if (difficulty === 'Easy') return <Badge variant="easy">Easy</Badge>;
-  if (difficulty === 'Medium') return <Badge variant="medium">Medium</Badge>;
-  return <Badge variant="hard">Hard</Badge>;
 }

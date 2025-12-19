@@ -1,91 +1,91 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { Code } from 'lucide-react';
-import { ThemeToggle } from './ThemeToggle';
+/**
+ * ======================================================
+ * Navbar
+ * ======================================================
+ * - Visible only when authenticated
+ * - Hidden on /login and /register
+ * - Admin link shown only for admin users
+ *
+ * BACKEND:
+ * POST /auth/logout
+ * ======================================================
+ */
+
+import React from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Code, LogOut, Shield } from 'lucide-react';
+
+import { Button } from './Button';
 import { useAuth } from '../context/AuthContext';
 
 export function Navbar() {
-  const { isAuthenticated, role, logout } = useAuth();
+  const location = useLocation();
   const navigate = useNavigate();
+  const { isAuthenticated, role, logout } = useAuth();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
+  /* ===================== HIDE NAVBAR ===================== */
+  if (
+    !isAuthenticated ||
+    location.pathname === '/login' ||
+    location.pathname === '/register'
+  ) {
+    return null;
+  }
+
+  /* ===================== LOGOUT ===================== */
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
   };
 
   return (
-    <nav className="h-16 border-b border-border bg-card/80 backdrop-blur-md flex items-center justify-between px-6">
-      {/* ===== LOGO ===== */}
-      <Link
-        to={isAuthenticated ? '/problems' : '/'}
-        className="flex items-center gap-2 text-lg font-semibold"
-      >
-        <Code className="w-5 h-5 text-primary" />
-        CodeArena
-      </Link>
-
-      {/* ===== RIGHT SIDE ===== */}
-      <div className="flex items-center gap-4">
-        <ThemeToggle />
-
-        {/* Common links */}
-        <Link
-          to="/leaderboard"
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          Leaderboard
+    <nav className="h-16 border-b border-border bg-card">
+      <div className="max-w-[1440px] mx-auto h-full px-6 flex items-center justify-between">
+        {/* ===== LEFT ===== */}
+        <Link to="/problems" className="flex items-center gap-2">
+          <Code className="w-6 h-6 text-primary" />
+          <span className="text-lg font-semibold">CodeArena</span>
         </Link>
 
-        {isAuthenticated && (
+        {/* ===== RIGHT ===== */}
+        <div className="flex items-center gap-6 text-sm">
           <Link
             to="/problems"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="text-muted-foreground hover:text-foreground"
           >
             Problems
           </Link>
-        )}
 
-        {/* Admin only */}
-        {role === 'admin' && (
           <Link
-            to="/admin"
-            className="text-sm text-warning hover:opacity-80 transition-colors"
+            to="/leaderboard"
+            className="text-muted-foreground hover:text-foreground"
           >
-            Admin
+            Leaderboard
           </Link>
-        )}
 
-        {/* Auth actions */}
-        {isAuthenticated ? (
-          <>
+          <Link
+            to="/profile"
+            className="text-muted-foreground hover:text-foreground"
+          >
+            Profile
+          </Link>
+
+          {/* ===== ADMIN ONLY ===== */}
+          {role === 'admin' && (
             <Link
-              to="/profile"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              to="/admin"
+              className="flex items-center gap-1 text-warning hover:text-warning/80"
             >
-              Profile
+              <Shield className="w-4 h-4" />
+              Admin
             </Link>
-            <button
-              onClick={handleLogout}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Logout
-            </button>
-          </>
-        ) : (
-          <>
-            <Link
-              to="/login"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Login
-            </Link>
-            <Link
-              to="/register"
-              className="px-3 py-1.5 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-            >
-              Sign Up
-            </Link>
-          </>
-        )}
+          )}
+
+          <Button variant="ghost" size="sm" onClick={handleLogout}>
+            <LogOut className="w-4 h-4" />
+            Logout
+          </Button>
+        </div>
       </div>
     </nav>
   );

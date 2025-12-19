@@ -1,26 +1,51 @@
 import React, { useState } from 'react';
-import { Code } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { Code } from 'lucide-react';
+
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
-import { Card, CardContent, CardHeader } from '../components/Card';
+import { Card, CardHeader, CardContent } from '../components/Card';
 import { useAuth } from '../context/AuthContext';
 
 export function LoginPage() {
-  const { login } = useAuth();
   const navigate = useNavigate();
+  const { refreshUser } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    setLoading(true);
 
-    // TEMP logic — backend will replace this
-    const role = email === 'admin@college.edu' ? 'admin' : 'user';
-    login(role);
+    try {
+      /**
+       * BACKEND: POST /auth/login
+       * credentials: 'include'
+       */
+      // await fetch('/auth/login', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   credentials: 'include',
+      //   body: JSON.stringify({ email, password }),
+      // });
 
-    navigate('/problems');
+      /* ================= MOCK ================= */
+      await new Promise((r) => setTimeout(r, 800));
+      /* ======================================== */
+
+      // IMPORTANT: refresh user from backend
+      await refreshUser();
+
+      navigate('/problems');
+    } catch {
+      setError('Invalid email or password');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -43,7 +68,6 @@ export function LoginPage() {
             <Input
               label="Email"
               type="email"
-              placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -52,15 +76,25 @@ export function LoginPage() {
             <Input
               label="Password"
               type="password"
-              placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
 
-            <Button type="submit" variant="primary" className="w-full">
-              Login
+            <Button
+              type="submit"
+              variant="primary"
+              className="w-full"
+              disabled={loading}
+            >
+              {loading ? 'Signing in…' : 'Login'}
             </Button>
+
+            {error && (
+              <p className="text-sm text-destructive text-center">
+                {error}
+              </p>
+            )}
 
             <p className="text-center text-sm text-muted-foreground">
               Don&apos;t have an account?{' '}
