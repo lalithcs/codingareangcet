@@ -1,41 +1,40 @@
-import React, { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, ReactNode } from 'react';
 
-type Role = 'user' | 'admin';
+type Role = 'user' | 'admin' | null;
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  role: Role | null;
-  login: (role?: Role) => void;
+  role: Role;
+  login: (role: Role) => void;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
-    localStorage.getItem('auth') === 'true'
-  );
-
-  const [role, setRole] = useState<Role | null>(
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [role, setRole] = useState<Role>(
     (localStorage.getItem('role') as Role) || null
   );
 
-  const login = (userRole: Role = 'user') => {
-    setIsAuthenticated(true);
-    setRole(userRole);
-    localStorage.setItem('auth', 'true');
-    localStorage.setItem('role', userRole);
+  const login = (r: Role) => {
+    setRole(r);
+    localStorage.setItem('role', r || '');
   };
 
   const logout = () => {
-    setIsAuthenticated(false);
     setRole(null);
-    localStorage.removeItem('auth');
     localStorage.removeItem('role');
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, role, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated: !!role,
+        role,
+        login,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { useAuth } from './context/AuthContext';
 
@@ -14,48 +14,39 @@ import { AdminDashboard } from './pages/AdminDashboard';
 
 export default function App() {
   const { isAuthenticated, role } = useAuth();
+  const location = useLocation();
+
+  const hideNavbar =
+    location.pathname === '/login' ||
+    location.pathname === '/register';
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
+      {!hideNavbar && (
+        <Navbar
+        />
+      )}
 
       <Routes>
-        {/* Public */}
         <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/problems" />} />
+        <Route path="/register" element={!isAuthenticated ? <RegisterPage /> : <Navigate to="/problems" />} />
 
-        {/* Open */}
-        <Route path="/problems" element={<ProblemsPage />} />
-        <Route path="/problems/:id" element={<ProblemDetailPage />} />
+        <Route path="/problems" element={isAuthenticated ? <ProblemsPage /> : <Navigate to="/login" />} />
+        <Route path="/problems/:id" element={isAuthenticated ? <ProblemDetailPage /> : <Navigate to="/login" />} />
+
+        <Route path="/submission/:id" element={isAuthenticated ? <SubmissionPage /> : <Navigate to="/login" />} />
+        <Route path="/profile" element={isAuthenticated ? <ProfilePage /> : <Navigate to="/login" />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
 
-        {/* Protected */}
-        <Route
-          path="/profile"
-          element={
-            isAuthenticated ? <ProfilePage /> : <Navigate to="/login" />
-          }
-        />
-
-        <Route
-          path="/submission/:id"
-          element={
-            isAuthenticated ? <SubmissionPage /> : <Navigate to="/login" />
-          }
-        />
-
-        {/* Admin only */}
+        {/* ADMIN ONLY */}
         <Route
           path="/admin"
           element={
-            isAuthenticated && role === 'admin'
-              ? <AdminDashboard />
-              : <Navigate to="/" />
+            role === 'admin' ? <AdminDashboard /> : <Navigate to="/" />
           }
         />
 
-        {/* Fallback */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </div>
