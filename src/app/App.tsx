@@ -3,7 +3,6 @@ import { Navbar } from './components/Navbar';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './context/ProtectedRoute';
 import { AdminRoute } from './context/AdminRoute';
-
 import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
@@ -13,6 +12,14 @@ import { SubmissionPage } from './pages/SubmissionPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { LeaderboardPage } from './pages/LeaderboardPage';
 import { AdminDashboard } from './pages/AdminDashboard';
+import { AdminProblemForm } from './pages/AdminProblemsForm';
+import { AdminProblemsPage } from './pages/AdminProblemsPage';
+import { AdminTestCaseEditor } from './pages/AdminTestCaseEditor';
+import { AdminContestForm } from './pages/AdminContestForm';
+import { AdminContestsPage } from './pages/AdminContestsPage';
+import { AdminSubmissionsPage } from './pages/AdminSubmissionsPage';
+import { AdminStatsPage } from './pages/AdminStatsPage';
+import { AdminLayout } from './layout/AdminLayout';
 
 export default function App() {
   return (
@@ -69,10 +76,23 @@ export default function App() {
           path="/admin"
           element={
             <AdminRoute>
-              <AdminDashboard />
+              <AdminLayout />
             </AdminRoute>
           }
-        />
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="problems" element={<AdminProblemsPage />} />
+          <Route path="problems/new" element={<AdminProblemForm />} />
+          <Route path="problems/:id" element={<AdminProblemForm />} />
+          <Route path="problems/:id/testcases" element={<AdminTestCaseEditor />} />
+          <Route path="contests" element={<AdminContestsPage />} />
+          <Route path="contests/new" element={<AdminContestForm />} />
+          <Route path="contests/:id" element={<AdminContestForm />} />
+          <Route path="submissions" element={<AdminSubmissionsPage />} />
+          <Route path="stats" element={<AdminStatsPage />} />
+        </Route>
+
+
 
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

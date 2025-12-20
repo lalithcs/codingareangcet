@@ -81,7 +81,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         id: 1,
         email: 'student@college.edu',
         username: 'lalith',
-        role: 'user', // change to 'admin' to test admin UI
+        role: 'admin', // change to 'admin' to test admin UI
       });
       /* ======================================================================== */
 

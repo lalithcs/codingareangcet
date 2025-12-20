@@ -1,24 +1,50 @@
 import React from 'react';
+import { cn } from './ui/utils';
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+type InputHTML = React.InputHTMLAttributes<HTMLInputElement>;
+type TextareaHTML = React.TextareaHTMLAttributes<HTMLTextAreaElement>;
+
+type SharedProps = {
   label?: string;
-  error?: string;
-}
+  as?: 'input' | 'textarea';
+  // onChange can be for input or textarea — allow any ChangeEvent to avoid narrow handler mismatches
+  onChange?: React.ChangeEventHandler<any>;
+  className?: string;
+};
 
-export function Input({ label, error, className = '', ...props }: InputProps) {
+// Use a union for element-specific attributes to avoid conflicts (e.g. autoComplete)
+type InputProps = SharedProps & (InputHTML | TextareaHTML);
+
+export function Input({
+  label,
+  as = 'input',
+  className,
+  ...props
+}: InputProps) {
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="space-y-1">
       {label && (
-        <label className="text-sm text-foreground">
+        <label className="text-sm font-medium">
           {label}
         </label>
       )}
-      <input
-        className={`w-full px-4 py-2 bg-input-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring transition-all ${className}`}
-        {...props}
-      />
-      {error && (
-        <span className="text-sm text-destructive">{error}</span>
+
+      {as === 'textarea' ? (
+        <textarea
+          className={cn(
+            'w-full rounded-md border bg-input-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring min-h-[100px]',
+            className
+          )}
+          {...(props as TextareaHTML)}
+        />
+      ) : (
+        <input
+          className={cn(
+            'w-full rounded-md border bg-input-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring',
+            className
+          )}
+          {...(props as InputHTML)}
+        />
       )}
     </div>
   );

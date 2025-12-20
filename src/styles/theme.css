@@ -7,6 +7,64 @@
 :root {
   --font-size: 16px;
 
+  /* -------- Light theme (warmer / cream defaults) -------- */
+  --background: #fbf4ec; /* warm cream background */
+  --foreground: #1f2326; /* dark-on-warm */
+
+  --card: #fff8f2; /* off-white, slightly warm cards */
+  --card-foreground: #1f2326;
+
+  --popover: #fff9f4;
+  --popover-foreground: #1f2326;
+
+  /* -------- Primary -------- */
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
+
+  /* -------- Secondary / Muted -------- */
+  --secondary: #fff6ef;
+  --secondary-foreground: #4b4038;
+
+  --muted: #fff6ef;
+  --muted-foreground: #6b5848;
+
+  --accent: #fff7ee;
+  --accent-foreground: #1f2326;
+
+  /* -------- Borders / Inputs -------- */
+  --border: #efe2d5;
+  --input: #fffaf5;
+  --input-background: #fff8f2;
+  --ring: #c5a07a;
+
+  /* -------- Status -------- */
+  --success: #16a34a;
+  --warning: #d97706;
+  --destructive: #dc2626;
+  --info: #3b82f6;
+
+  /* -------- Difficulty -------- */
+  --easy: #16a34a;
+  --medium: #d97706;
+  --hard: #dc2626;
+
+  /* -------- Code Editor -------- */
+  --code-bg: #fff9f4;
+  --code-border: #efe2d5;
+
+  /* -------- Sidebar -------- */
+  --sidebar: #fff8f2;
+  --sidebar-foreground: #1f2326;
+  --sidebar-border: #efe2d5;
+
+  /* -------- Radius -------- */
+  --radius: 0.5rem;
+}
+
+/* Dark theme variables applied when `.dark` is present on the root */
+.dark {
+  --font-size: 16px;
+
   /* -------- Base -------- */
   --background: #0b0d12;
   --foreground: #e5e7eb;

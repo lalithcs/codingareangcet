@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import type { ChangeEvent } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Navbar } from '../components/Navbar';
 import { Code } from 'lucide-react';
 
 import { Input } from '../components/Input';
@@ -49,7 +51,11 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4 pt-20">
+      <div className="fixed top-0 left-0 right-0 z-50">
+        <Navbar showWhenUnauthenticated publicView />
+      </div>
+
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-2">
           <div className="flex justify-center">
@@ -69,7 +75,7 @@ export function LoginPage() {
               label="Email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.currentTarget.value)}
               required
             />
 
@@ -77,7 +83,7 @@ export function LoginPage() {
               label="Password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.currentTarget.value)}
               required
             />
 
