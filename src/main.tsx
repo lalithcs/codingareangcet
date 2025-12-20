@@ -6,13 +6,16 @@ import { AuthProvider } from './app/context/AuthContext';
 import './styles/index.css';
 import {Navbar} from './app/components/Navbar';
 import { DesktopOnly } from './app/components/DesktopOnly';
+import { ThemeProvider } from './app/theme/ThemeProvider';
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <AuthProvider>
   <BrowserRouter>
+  <ThemeProvider>
   <DesktopOnly>
     <App />
   </DesktopOnly>
+  </ThemeProvider>
   </BrowserRouter>
 </AuthProvider>
 
